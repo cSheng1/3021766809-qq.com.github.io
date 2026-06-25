@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>花枝鼠科普站</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background-color: #f0f0f0;
+            color: #5c4b48;
+        }
+
+        .wrap {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 左侧粉色侧边栏 */
+        aside {
+            width: 210px;
+            background: linear-gradient(180deg, #fce4e8, #f6c8d0);
+            padding: 30px 18px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        aside h1 {
+            font-size: 20px;
+            color: #805b60;
+            margin-bottom: 35px;
+            font-weight: 600;
+        }
+
+        .side-nav a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #7a545a;
+            text-decoration: none;
+            padding: 12px 14px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            font-size: 15px;
+            transition: 0.2s;
+        }
+
+        .side-nav a:hover,
+        .side-nav a.active {
+            background: rgba(255, 255, 255, 0.65);
+            color: #a83260;
+        }
+
+        /* 右侧主内容区 */
+        main {
+            flex: 1;
+            margin-left: 210px;
+            background: #ffffff;
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            color: #7a545a;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        /* 内容卡片 */
+        .content-box {
+            background: #fcf5f7;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .content-box h2 {
+            font-size: 22px;
+            color: #805b60;
+            margin-bottom: 18px;
+        }
+
+        .content-box p {
+            font-size: 16px;
+            line-height: 1.85;
+            color: #665451;
+            margin-bottom: 14px;
+        }
+
+        /* 图片相册卡片 */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-top: 20px;
+        }
+
+        .photo-card {
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #f2e1e6;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .photo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(216, 143, 154, 0.25);
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .photo-card p {
+            padding: 10px;
+            text-align: center;
+            color: #88676e;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        /* 弹窗遮罩层 */
+        .img-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 40px;
+        }
+        .img-modal.show {
+            display: flex;
+        }
+        .modal-inner {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+        }
+        .modal-inner img {
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: 12px;
+        }
+        .close-btn {
+            position: absolute;
+            top: -30px;
+            right: -10px;
+            color: #fff;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        /* 信息两栏 */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-top: 20px;
+        }
+
+        .info-block {
+            background: #fff;
+            border-radius: 16px;
+            padding: 22px;
+            border: 1px solid #f2e1e6;
+        }
+
+        .info-block h3 {
+            font-size: 18px;
+            color: #805b60;
+            margin-bottom: 12px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #b49c9f;
+            font-size: 14px;
+            margin-top: 30px;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 900px) {
+            aside {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            main {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .photo-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .photo-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrap">
+
+        <!-- 左侧粉色导航栏 -->
+        <aside>
+            <h1>花枝鼠科普站</h1>
+            <nav class="side-nav">
+                <a href="#intro">📖 基础介绍</a>
+                <a href="#gallery">📷 实拍相册</a>
+                <a href="#character">💛 性格特点</a>
+                <a href="#germ">🛡️ 恶菌辟谣</a>
+                <a href="#raise">📋 饲养教程</a>
+            </nav>
+        </aside>
+
+        <!-- 右侧白色内容区 -->
+        <main>
+
+            <!-- 基础介绍 -->
+            <div class="content-box" id="intro">
+                <h2>花枝鼠基础科普</h2>
+                <p>花枝鼠是经过百年人工驯化的宠物鼠，和野外老鼠不是同一品系。它们干净、亲人、智商高，是很受欢迎的小型家养宠物。</p>
+                <p>花枝鼠性格温和，很少咬人，能记住主人气味，也可以训练一些小技能。平均寿命约2~3年，饲养成本不高，比较适合新手和学生饲养。</p>
+            </div>
+
+            <!-- 实拍相册 -->
+            <h2 class="page-title" id="gallery">自家花枝实拍相册</h2>
+            <div class="photo-grid">
+                <div class="photo-card" data-img="img1.jpg">
+                    <img src="img1.jpg">
+                    <p>角落慵懒摆烂</p>
+                </div>
+                <div class="photo-card" data-img="img2.jpg">
+                    <img src="img2.jpg">
+                    <p>塑料袋探头好奇</p>
+                </div>
+                <div class="photo-card" data-img="img3.jpg">
+                    <img src="img3.jpg">
+                    <p>床上乖乖看镜头</p>
+                </div>
+                <div class="photo-card" data-img="img4.jpg">
+                    <img src="img4.jpg">
+                    <p>两只抱团睡觉</p>
+                </div>
+                <div class="photo-card" data-img="img5.jpg">
+                    <img src="img5.jpg">
+                    <p>站立讨食</p>
+                </div>
+                <div class="photo-card" data-img="img6.jpg">
+                    <img src="img6.jpg">
+                    <p>手心贴贴撒娇</p>
+                </div>
+                <div class="photo-card" data-img="img7.jpg">
+                    <img src="img7.jpg">
+                    <p>埋头干饭吃粮</p>
+                </div>
+                <div class="photo-card" data-img="img8.jpg">
+                    <img src="img8.jpg">
+                    <p>被窝探头特写</p>
+                </div>
+                <div class="photo-card" data-img="img9.jpg">
+                    <img src="img9.jpg">
+                    <p>抱着面包干饭</p>
+                </div>
+                <div class="photo-card" data-img="img10.jpg">
+                    <img src="img10.jpg">
+                    <p>粉鼻头怼脸拍</p>
+                </div>
+                <div class="photo-card" data-img="img11.jpg">
+                    <img src="img11.jpg">
+                    <p>双手分食零食</p>
+                </div>
+            </div>
+
+            <!-- 性格特点 -->
+            <div class="content-box" id="character">
+                <h2>花枝鼠性格特点</h2>
+                <div class="two-col">
+                    <div class="info-block">
+                        <h3>温顺亲人</h3>
+                        <p>花枝鼠经过多代家养驯化，性格稳定，一般不会主动攻击人，上手撸的时候比较放松。</p>
+                    </div>
+                    <div class="info-block">
+                        <h3>智商较高</h3>
+                        <p>它们能识别主人声音和气味，也可以训练躺手、回笼、转圈等简单互动。</p>
+                    </div>
+                    <div class="info-block">
+                        <h3>适合群居</h3>
+                        <p>花枝鼠喜欢有同伴，同窝同性一起饲养通常更稳定，长期独居可能会显得孤单。</p>
+                    </div>
+                    <div class="info-block">
+                        <h3>作息安静</h3>
+                        <p>它们白天大多睡觉，傍晚和夜间活动，只要笼子空间足够，不会特别吵闹。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 恶菌辟谣 -->
+            <div class="content-box" id="germ">
+                <h2>恶菌科普辟谣</h2>
+                <p><strong>误区1：花枝鼠和野鼠一样脏</strong><br>花枝鼠是定向繁育的宠物鼠，不是下水道野鼠，日常会自己清洁身体，定期打扫笼子基本没有明显体味。</p>
+                <p><strong>误区2：养花枝鼠会带病菌</strong><br>正规家养宠物花枝鼠的环境和来源相对干净，只要不接触不明野鼠、不混用野外垫料，风险很低。</p>
+                <p><strong>误区3：被它咬了就一定会出事</strong><br>花枝鼠很少主动咬人。如果被咬伤，先冲洗消毒；伤口较深或出现异常反应，再及时就医。</p>
+            </div>
+
+            <!-- 饲养教程 -->
+            <div class="content-box" id="raise">
+                <h2>新手饲养教程</h2>
+                <div class="two-col">
+                    <div class="info-block">
+                        <h3>居住环境</h3>
+                        <p>选择通风良好的笼子，配备垫料、窝、跑轮和饮水器。环境温度保持在20~26℃比较合适。</p>
+                    </div>
+                    <div class="info-block">
+                        <h3>饮食搭配</h3>
+                        <p>主食可以选择专用鼠粮，少量搭配蔬菜和蛋白质零食。不要喂巧克力、洋葱、牛油果等危险食物。</p>
+                    </div>
+                    <div class="info-block">
+                        <h3>日常护理</h3>
+                        <p>不需要频繁水洗，它们会自我清洁。每周清理笼子，定期检查指甲、牙齿和精神状态。</p>
+                    </div>
+                    <div class="info-block">
+                        <h3>健康观察</h3>
+                        <p>出现精神差、不吃东西、呼吸异常、拉稀等情况要及时处理。平时保持环境干净，减少粉尘和异味。</p>
+                    </div>
+                </div>
+            </div>
+
+            <footer>
+                © 2026 花枝鼠科普站 | 自家花枝实拍
+            </footer>
+
+        </main>
+
+    </div>
+
+    <!-- 图片放大弹窗 -->
+    <div class="img-modal" id="imgModal">
+        <div class="modal-inner">
+            <span class="close-btn">×</span>
+            <img id="modalImg" src="" alt="大图">
+        </div>
+    </div>
+
+<script>
+    // 获取弹窗元素
+    const modal = document.getElementById('imgModal');
+    const modalImg = document.getElementById('modalImg');
+    const closeBtn = document.querySelector('.close-btn');
+    const photoCards = document.querySelectorAll('.photo-card');
+
+    // 点击图片卡片打开弹窗
+    photoCards.forEach(card => {
+        card.addEventListener('click', function(){
+            const imgSrc = this.getAttribute('data-img');
+            modalImg.src = imgSrc;
+            modal.classList.add('show');
+        })
+    })
+
+    // 点击关闭按钮关闭弹窗
+    closeBtn.addEventListener('click', ()=>{
+        modal.classList.remove('show');
+    })
+
+    // 点击遮罩空白处关闭弹窗
+    modal.addEventListener('click', function(e){
+        if(e.target === modal){
+            modal.classList.remove('show');
+        }
+    })
+</script>
+
+</body>
+</html>
